@@ -4,4 +4,4 @@ None so far
 
 # Releases
 
-- Windows
+- Web
