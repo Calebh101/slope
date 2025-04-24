@@ -1,2 +1,7 @@
-# slope
-A clone of the original slope game by Y8
+# Improvements
+
+None so far
+
+# Releases
+
+- Windows
