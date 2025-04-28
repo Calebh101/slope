@@ -90,6 +90,19 @@
       document.body.style.cursor = "auto";
       document.removeEventListener('mousemove', showCursor);
     }
+
+    function keypress(key, code) {
+      const event = new KeyboardEvent('keydown', {
+        key: key,
+        code: code,
+        keyCode: 65,
+        which: 65,
+        bubbles: true,
+      });
+
+      console.log("sending key " + key + " (" + code + ")");
+      document.dispatchEvent(event);
+    }
   </script>
   <body>
     <div id="content">
@@ -98,6 +111,9 @@
       <p>Move: AD, QD, or &larr;&rarr;<br>Mask tab: M<br>Open fake website: K</p>
       <button id="mask-tab-button" onclick="maskTabs()">Mask Tab</button>
       <button onclick="openMaskWebsite()">Fake Website</button>
+      <!--<br>
+      <button onclick="keypress('a', 'KeyA')">&larr;</button>
+      <button onclick="keypress('d', 'KeyD')">&rarr;</button>-->
     </div>
     <div id="container" class="container webgl-content">
       <div id="gameContainer" style="width: 900px; height: 600px"></div>
