@@ -92,6 +92,10 @@
     }
 
     function keypress(key, code) {
+      // Example:
+        // key: "a"
+        // code: "KeyA"
+
       const event = new KeyboardEvent('keydown', {
         key: key,
         code: code,
@@ -106,17 +110,14 @@
   </script>
   <body>
     <div id="content">
-      <div style="height: 650px;"></div>
+      <div style="height: 700px;"></div>
       <p>Slope clone 1.0.0<br>Original game by Y8</p>
       <p>Move: AD, QD, or &larr;&rarr;<br>Mask tab: M<br>Open fake website: K</p>
       <button id="mask-tab-button" onclick="maskTabs()">Mask Tab</button>
       <button onclick="openMaskWebsite()">Fake Website</button>
-      <!--<br>
-      <button onclick="keypress('a', 'KeyA')">&larr;</button>
-      <button onclick="keypress('d', 'KeyD')">&rarr;</button>-->
     </div>
     <div id="container" class="container webgl-content">
-      <div id="gameContainer" style="width: 900px; height: 600px"></div>
+      <div id="gameContainer" style="width: 99vw; height: 600px"></div>
       <div class="footer">
         <div class="unity disable"></div>
         <div class="webgl enable"></div>
