@@ -23,7 +23,6 @@
     <link rel="canonical" href="https://www.y8.com/games/slope">
   </head>
   <script>
-    var version = "1.0.1";
     var masked = false;
     var title = "The Purposes of Education in Youth";
     init();
@@ -31,7 +30,6 @@
     function init() {
       console.log("Loading...");
       maskTabs(true);
-      setColor(localStorage.getItem('colorTheme') || 0);
 
       document.addEventListener('keydown', function(event) {
         const key = event.key.toLowerCase();
@@ -79,7 +77,7 @@
     }
 
     function openMaskWebsite() {
-      const url = localStorage.getItem('fakeWebsite') || "https://classroom.google.com";
+      const url = localStorage.getItem('fakeWebsite') ?? "https://classroom.google.com";
       console.log("Opening URL " + url);
       window.open(url, "_blank");
     }
@@ -114,22 +112,51 @@
     function setColor(hue) {
       console.log("Setting color: " + hue);
       localStorage.setItem('colorTheme', hue);
-      document.querySelector('#gameContainer')?.style.filter = 'hue-rotate(' + hue + 'deg)';
+      document.querySelector('#gameContainer').style.filter = 'hue-rotate(' + hue + 'deg)';
+    }
+
+    function setMono() {
+      console.log("Setting mono");
+      localStorage.setItem('colorTheme', "mono");
+      document.querySelector('#gameContainer').style.filter = 'grayscale(100%)';
+    }
+
+    function setTheme(value) {
+      switch (value) {
+        case "0":
+          setColor(0);
+          break;
+        case "hue-90":
+          setColor(90);
+          break;
+        case "hue-180":
+          setColor(180);
+          break;
+        case "hue-270":
+          setColor(270);
+          break;
+        case "mono":
+          setMono();
+        default:
+          console.error("Invalid theme: " + value);
+          break;
+      }
     }
   </script>
   <body>
     <div id="content">
       <div style="height: 700px;"></div>
-      <p><span id="version-text">Loading...</span><br>Original game by Y8</p>
+      <p>Slope clone 1.0.1<br>Original game by Y8</p>
       <p>Move: AD, QD, or &larr;&rarr;<br>Mask tab: M<br>Open fake website: K</p>
       <button id="mask-tab-button" onclick="maskTabs()">Mask Tab</button>
       <button onclick="openMaskWebsite()">Fake Website</button>
       <label for="themeselect">Color theme:</label>
-      <select id="themeselect" onchange="setColor(this.value)">
+      <select id="themeselect" onchange="setTheme(this.value)">
         <option value="0">Normal</option>
-        <option value="25">Theme 1</option>
-        <option value="50">Theme 2</option>
-        <option value="75">Theme 3</option>
+        <option value="hue-90">Blue & Green</option>
+        <option value="hue-180">Purple & Blue</option>
+        <option value="hue-270">Orange & Purple</option>
+        <option value="mono">Monochrome</option>
       </select>
     </div>
     <div id="container" class="container webgl-content">
@@ -143,6 +170,21 @@
     </div>
   </body>
   <script>
-    document.getElementById("version-text").innerText = "Slope Clone V. " + version;
+    console.log("Running post-body initializer");
+    const dropdown = document.getElementById("themeselect");
+
+    if (localStorage.getItem("colorTheme") != "mono") {
+      setColor(localStorage.getItem("colorTheme") ?? 0);
+    } else {
+      setMono();
+    }
+
+    if (Array.from(dropdown.options).some(option => option.value === "hue-" + localStorage.getItem("colorTheme"))) {
+      dropdown.value = "hue-" + localStorage.getItem("colorTheme");
+    } else if (localStorage.getItem("colorTheme") == "mono") {
+      dropdown.value = "mono";
+    } else {
+      dropdown.value = "0";
+    }
   </script>
 </html>
