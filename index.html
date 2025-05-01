@@ -30,6 +30,7 @@
     function init() {
       console.log("Loading...");
       maskTabs(true);
+      setColor(localStorage.getItem('colorTheme') || 0);
 
       document.addEventListener('keydown', function(event) {
         const key = event.key.toLowerCase();
@@ -57,7 +58,6 @@
     function maskTabs(init = false) {
       const element = document.querySelector("link[rel~='icon']");
       console.log("mask tab: " + (init ? "initializing" : (masked ? "unmasking" : "masking")));
-      setColor(localStorage.getItem('colorTheme') ?? 0);
 
       if (init) {
         element.href = "icon.png?" + new Date().getTime();
@@ -78,7 +78,7 @@
     }
 
     function openMaskWebsite() {
-      const url = localStorage.getItem('fakeWebsite') ?? "https://classroom.google.com";
+      const url = localStorage.getItem('fakeWebsite') || "https://classroom.google.com";
       console.log("Opening URL " + url);
       window.open(url, "_blank");
     }
@@ -111,9 +111,9 @@
     }
 
     function setColor(hue) {
-      console.log("setting color: " + hue);
+      console.log("Setting color: " + hue);
       localStorage.setItem('colorTheme', hue);
-      document.querySelector('#gameContainer').style.filter = 'hue-rotate(' + hue + 'deg)';
+      document.querySelector('#gameContainer')?.style.filter = 'hue-rotate(' + hue + 'deg)';
     }
   </script>
   <body>
@@ -124,8 +124,8 @@
       <button id="mask-tab-button" onclick="maskTabs()">Mask Tab</button>
       <button onclick="openMaskWebsite()">Fake Website</button>
       <label for="themeselect">Color theme:</label>
-      <select id="themeselect" onchange="setColor(this)">
-        <option value="0">--Normal</option>
+      <select id="themeselect" onchange="setColor(this.value)">
+        <option value="0">Normal</option>
         <option value="25">Theme 1</option>
         <option value="50">Theme 2</option>
         <option value="75">Theme 3</option>
