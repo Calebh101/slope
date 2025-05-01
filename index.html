@@ -19,9 +19,11 @@
     <script src="./y8-studio/unity/joll/slope/Build/UnityLoader.js"></script>
     <script>
       var gameInstance = UnityLoader.instantiate("gameContainer", "./y8-studio/unity/joll/slope/Build/slope_27Sept.json", {onProgress: UnityProgress,Module:{onRuntimeInitialized: function() {UnityProgress(gameInstance, "complete")}}});
-    </script><link rel="canonical" href="https://www.y8.com/games/slope">
+    </script>
+    <link rel="canonical" href="https://www.y8.com/games/slope">
   </head>
   <script>
+    var version = "1.0.1";
     var masked = false;
     var title = "The Purposes of Education in Youth";
     init();
@@ -111,7 +113,7 @@
   <body>
     <div id="content">
       <div style="height: 700px;"></div>
-      <p>Slope clone 1.0.1<br>Original game by Y8</p>
+      <p><span id="version-text">Loading...</span><br>Original game by Y8</p>
       <p>Move: AD, QD, or &larr;&rarr;<br>Mask tab: M<br>Open fake website: K</p>
       <button id="mask-tab-button" onclick="maskTabs()">Mask Tab</button>
       <button onclick="openMaskWebsite()">Fake Website</button>
@@ -126,4 +128,7 @@
       </div>
     </div>
   </body>
+  <script>
+    document.getElementById("version-text").innerText = "Slope Clone V. " + version;
+  </script>
 </html>
