@@ -1,3 +1,7 @@
+<!--
+  If you want to, you can set fakeTitle and fakeWebsite in the local storage for the website to whatever you want. There's no UI for this yet.
+-->
+
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
@@ -23,17 +27,68 @@
     <link rel="canonical" href="https://www.y8.com/games/slope">
   </head>
   <script>
-    var masked = false;
+    var version = "1.1.0";
     var title = "The Purposes of Education in Youth";
+
+    var blocked = [];
+    var masked = false;
+
+    const originalFetch = window.fetch;
+    const originalXHROpen = XMLHttpRequest.prototype.open;
+    const originalXHRSend = XMLHttpRequest.prototype.send;
+
+    // Runs the initializer.
     init();
 
+    // Initializes all the listeners and other functions.
     function init() {
-      console.log("Loading...");
+      console.log("Loading... (version: " + version + ")");
       maskTabs(true);
 
+      window.fetch = function(url, options) {
+        return processBlock(url, "fetch")
+      };
+
+      XMLHttpRequest.prototype.open = function(method, url) {
+        this._receivedUrl = url;
+        console.log("XHR opened: " + url);
+        return originalXHROpen.apply(this, [method, url]);
+      };
+
+      XMLHttpRequest.prototype.send = function(...args) {
+        const url = this._receivedUrl;
+        const host = (new URL(url, location.href)).hostname;
+
+        // If it's not fetching a local file, then block it. Otherwise, the game won't load.
+        if (host == "localhost") {
+          console.log("Allowed XHR: " + url + " (" + host + ")");
+          return originalXHRSend.apply(this, args);
+        } else {
+          return processBlock(url, "XHR");
+        }
+      };
+
+      // Logs and rejects a fetch or XHR.
+      // To see blocked websites: "console.log(blocked)" in console
+      function processBlock(url, method) {
+        const host = (new URL(url, location.href)).hostname;
+        console.error("Blocked " + method + ": " + url + " (" + host + ")");
+
+        if (!blocked.includes(host)) {
+          blocked.push(host);
+        }
+
+        if (method == "XHR") {
+          return;
+        } else {
+          return Promise.reject("Blocked");
+        }
+      }
+
+      // Keylogger /s
       document.addEventListener('keydown', function(event) {
         const key = event.key.toLowerCase();
-        console.log("Detected key: " + key);
+        //console.log("Detected key: " + key);
 
         switch (key) {
           case "q":
@@ -54,6 +109,7 @@
       });
     }
 
+    // Change the title and icon.
     function maskTabs(init = false) {
       const element = document.querySelector("link[rel~='icon']");
       console.log("mask tab: " + (init ? "initializing" : (masked ? "unmasking" : "masking")));
@@ -70,28 +126,32 @@
         document.getElementById("mask-tab-button").innerText = "Mask Tab";
       } else {
         masked = true;
-        document.title = title;
+        document.title = localStorage.getItem('fakeTitle') ?? title;
         element.href = "mask.png?" + new Date().getTime();
         document.getElementById("mask-tab-button").innerText = "Unmask Tab";
       }
     }
 
+    // Opens Google Classroom (or a website of your choice).
     function openMaskWebsite() {
       const url = localStorage.getItem('fakeWebsite') ?? "https://classroom.google.com";
       console.log("Opening URL " + url);
       window.open(url, "_blank");
     }
 
+    // Hides the cursor. (unused)
     function hideCursor() {
       document.body.style.cursor = "none";
       document.addEventListener('mousemove', showCursor);
     }
 
+    // Shows the cursor. (unused)
     function showCursor() {
       document.body.style.cursor = "auto";
       document.removeEventListener('mousemove', showCursor);
     }
 
+    // Simulates a key press. (unused)
     function keypress(key, code) {
       // Example:
         // key: "a"
@@ -109,31 +169,35 @@
       document.dispatchEvent(event);
     }
 
-    function setColor(hue) {
-      console.log("Setting color: " + hue);
-      localStorage.setItem('colorTheme', hue);
+    // Rotates the hue of the element to a custom degree.
+    function setColor(hue, option) {
+      console.log("Setting color: " + hue + " (option " + option + ")");
+      localStorage.setItem('colorTheme', "hue-" + option);
       document.querySelector('#gameContainer').style.filter = 'hue-rotate(' + hue + 'deg)';
     }
 
+    // Sets the grayscale to on.
     function setMono() {
       console.log("Setting mono");
       localStorage.setItem('colorTheme', "mono");
       document.querySelector('#gameContainer').style.filter = 'grayscale(100%)';
     }
 
+    // Switcher for the game's theme.
     function setTheme(value) {
       switch (value) {
         case "0":
-          setColor(0);
+          setColor(0, 0);
           break;
-        case "hue-90":
-          setColor(90);
+        case "hue-1":
+          setColor(60, 1);
+          document.querySelector("#gameContainer").style.filter += " brightness(2)";
           break;
-        case "hue-180":
-          setColor(180);
+        case "hue-2":
+          setColor(220, 2);
           break;
-        case "hue-270":
-          setColor(270);
+        case "hue-3":
+          setColor(270, 3);
           break;
         case "mono":
           setMono();
@@ -142,20 +206,36 @@
           break;
       }
     }
+
+    // Instead of using the game's fullscreen function, this instead makes the div containing the game fullscreen.
+    // If we let the game use its own fullscreen function, we wouldn't be able to apply any styling.
+    function fullscreen() {
+      //gameInstance.SetFullscreen(1);
+      const element = document.getElementById("gameContainer");
+    
+        if (element.requestFullscreen) {
+          element.requestFullscreen();
+        } else if (element.webkitRequestFullscreen) {
+          element.webkitRequestFullscreen();
+        } else if (element.msRequestFullscreen) {
+          element.msRequestFullscreen();
+        }
+    }
   </script>
   <body>
     <div id="content">
-      <div style="height: 700px;"></div>
-      <p>Slope clone 1.0.1<br>Original game by Y8</p>
+      <div style="height: 100vh;"></div>
+      <p><span id="versiontext">Loading...</span><br>Original game by Y8</p>
       <p>Move: AD, QD, or &larr;&rarr;<br>Mask tab: M<br>Open fake website: K</p>
       <button id="mask-tab-button" onclick="maskTabs()">Mask Tab</button>
       <button onclick="openMaskWebsite()">Fake Website</button>
+      <br>
       <label for="themeselect">Color theme:</label>
       <select id="themeselect" onchange="setTheme(this.value)">
         <option value="0">Normal</option>
-        <option value="hue-90">Blue & Green</option>
-        <option value="hue-180">Purple & Blue</option>
-        <option value="hue-270">Orange & Purple</option>
+        <option value="hue-1">Blue & Orange (Beta)</option>
+        <option value="hue-2">Pink & Blue</option>
+        <option value="hue-3">Orange & Purple</option>
         <option value="mono">Monochrome</option>
       </select>
     </div>
@@ -165,24 +245,21 @@
         <div class="unity disable"></div>
         <div class="webgl enable"></div>
         <h1 class="game-name">Slope</h1>
-        <div class="fullscreen" onclick="gameInstance.SetFullscreen(1)">Maximize</div>
+        <div class="fullscreen" onclick="fullscreen()">Maximize</div>
       </div>
     </div>
   </body>
   <script>
+    // For stuff that needs to run after the elements are loaded.
     console.log("Running post-body initializer");
+
+    document.getElementById("versiontext").innerText = "Slope clone " + version;
     const dropdown = document.getElementById("themeselect");
+    setTheme(localStorage.getItem("colorTheme") ?? 0);
 
-    if (localStorage.getItem("colorTheme") != "mono") {
-      setColor(localStorage.getItem("colorTheme") ?? 0);
-    } else {
-      setMono();
-    }
-
-    if (Array.from(dropdown.options).some(option => option.value === "hue-" + localStorage.getItem("colorTheme"))) {
-      dropdown.value = "hue-" + localStorage.getItem("colorTheme");
-    } else if (localStorage.getItem("colorTheme") == "mono") {
-      dropdown.value = "mono";
+    // Default to Normal (if there's an invalid option)
+    if (Array.from(dropdown.options).some(option => option.value === localStorage.getItem("colorTheme"))) {
+      dropdown.value = localStorage.getItem("colorTheme");
     } else {
       dropdown.value = "0";
     }
