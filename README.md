@@ -21,6 +21,7 @@ This Slope client uses the original Slope game, but has several addons/features:
     - Monochrome (black and white)
 - Includes a tab masker
 - Includes a quick button to open a fake website (like Google Classroom)
+- Includes a shortcut to hide your cursor so you can lock in (beta, it doesn't work fully)
 
 # Changelog
 

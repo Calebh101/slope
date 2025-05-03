@@ -89,8 +89,8 @@
         //console.log("Detected key: " + key);
 
         switch (key) {
-          case "q":
-            //hideCursor();
+          case "r":
+            hideCursor();
             break;
           
           case "k":
@@ -163,16 +163,18 @@
       window.open(url, "_blank");
     }
 
-    // Hides the cursor. (unused)
-    function hideCursor() {
-      document.body.style.cursor = "none";
-      document.addEventListener('mousemove', showCursor);
+    // Shows the cursor by setting the cursor to blank (default) and removing listeners.
+    function showCursor() {
+      document.documentElement.style.cursor = "";
+      document.removeEventListener('mousemove', showCursor);
+      document.removeEventListener('click', showCursor);
     }
 
-    // Shows the cursor. (unused)
-    function showCursor() {
-      document.body.style.cursor = "auto";
-      document.removeEventListener('mousemove', showCursor);
+    // Hides the cursor by setting the cursor to none and adding listeners for movement or clicks.
+    function hideCursor() {
+      document.documentElement.style.cursor = "none";
+      document.addEventListener('mousemove', showCursor);
+      document.addEventListener('click', showCursor);
     }
 
     // Simulates a key press. (unused)
