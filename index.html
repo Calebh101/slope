@@ -60,30 +60,13 @@
         const host = (new URL(url, location.href)).hostname;
 
         // If it's not fetching an asset file, then block it. Otherwise, the game won't load.
-        if (host == window.location.host) {
+        if (host == window.location.host.replace(/:\d+$/, '')) {
           console.log("Allowed XHR: " + url + " (" + host + ")");
           return originalXHRSend.apply(this, args);
         } else {
           return processBlock(url, "XHR");
         }
       };
-
-      // Logs and rejects a fetch or XHR.
-      // To see blocked websites: "console.log(blocked)" in console
-      function processBlock(url, method) {
-        const host = (new URL(url, location.href)).hostname;
-        console.error("Blocked " + method + ": " + url + " (" + host + ")");
-
-        if (!blocked.includes(host)) {
-          blocked.push(host);
-        }
-
-        if (method == "XHR") {
-          return;
-        } else {
-          return Promise.reject("Blocked");
-        }
-      }
 
       // Keylogger /s
       document.addEventListener('keydown', function(event) {
@@ -107,6 +90,23 @@
             break;
         }
       });
+    }
+
+    // Logs and rejects a fetch or XHR.
+    // To see blocked websites: "console.log(blocked)" in console
+    function processBlock(url, method) {
+      const host = (new URL(url, location.href)).hostname;
+      console.error("Blocked " + method + ": " + url + " (" + host + ")");
+
+      if (!blocked.includes(host)) {
+        blocked.push(host);
+      }
+
+      if (method == "XHR") {
+        return;
+      } else {
+        return Promise.reject("Blocked");
+      }
     }
 
     // Change the title and icon.
@@ -263,5 +263,18 @@
     } else {
       dropdown.value = "0";
     }
+
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node.tagName === 'IMG' && node.src.includes('googleads.g.doubleclick.net')) {
+            node.remove();
+            processBlock(node.src, "IMG");
+          }
+        }
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
   </script>
 </html>
