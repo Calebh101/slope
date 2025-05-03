@@ -5,16 +5,19 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta http-equiv="Content-Security-Policy" content="
+    <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
-      script-src 'self';
-      style-src 'self';
+      script-src 'self' 'nonce-script297' 'unsafe-eval';
+      script-src-elem 'self' 'nonce-script297' blob:;
+      style-src 'self' 'unsafe-inline';
       connect-src 'self';
       img-src 'self';
       font-src 'self';
       media-src 'self';
+      worker-src 'self' blob:;
     ">
 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta charset="utf-8">
     <title>Slope</title>
     <link rel="icon">
@@ -30,13 +33,13 @@
     <script src="./y8-studio/unity/config/TemplateData56/game.js" type="text/javascript"></script>
     <script src="./y8-studio/unity/config/TemplateData56/UnityProgress.js"></script>
     <script src="./y8-studio/unity/joll/slope/Build/UnityLoader.js"></script>
-    <script>
+    <script nonce="script297">
       var gameInstance = UnityLoader.instantiate("gameContainer", "./y8-studio/unity/joll/slope/Build/slope_27Sept.json", {onProgress: UnityProgress,Module:{onRuntimeInitialized: function() {UnityProgress(gameInstance, "complete")}}});
     </script>
     <link rel="canonical" href="https://www.y8.com/games/slope">
   </head>
-  <script>
-    var version = "1.1.0";
+  <script nonce="script297">
+    var version = "1.1.1";
     var title = "The Purposes of Education in Youth";
 
     var blocked = [];
@@ -54,6 +57,8 @@
       console.log("Loading... (version: " + version + ")");
       maskTabs(true);
 
+      /* This code has been deprecated in favor of CSP.
+      
       window.fetch = function(url, options) {
         return processBlock(url, "fetch")
       };
@@ -75,7 +80,7 @@
         } else {
           return processBlock(url, "XHR");
         }
-      };
+      };*/
 
       // Keylogger /s
       document.addEventListener('keydown', function(event) {
@@ -102,7 +107,8 @@
     }
 
     // Logs and rejects a fetch or XHR.
-    // To see blocked websites: "console.log(blocked)" in console
+    // To see blocked websites: "console.log(blocked)" in console.
+    // -- This function has been deprecated in favor of CSP.
     function processBlock(url, method) {
       const host = (new URL(url, location.href)).hostname;
       console.error("Blocked " + method + ": " + url + " (" + host + ")");
@@ -236,11 +242,11 @@
       <div style="height: 100vh;"></div>
       <p><span id="versiontext">Loading...</span><br>Original game by Y8</p>
       <p>Move: AD, QD, or &larr;&rarr;<br>Mask tab: M<br>Open fake website: K</p>
-      <button id="mask-tab-button" onclick="maskTabs()">Mask Tab</button>
-      <button onclick="openMaskWebsite()">Fake Website</button>
+      <button id="mask-tab-button">Mask Tab</button>
+      <button id="mask-website-button">Fake Website</button>
       <br>
       <label for="themeselect">Color theme:</label>
-      <select id="themeselect" onchange="setTheme(this.value)">
+      <select id="themeselect" >
         <option value="0">Normal</option>
         <option value="hue-1">Blue & Orange (Beta)</option>
         <option value="hue-2">Pink & Blue</option>
@@ -254,11 +260,11 @@
         <div class="unity disable"></div>
         <div class="webgl enable"></div>
         <h1 class="game-name">Slope</h1>
-        <div class="fullscreen" onclick="fullscreen()">Maximize</div>
+        <div class="fullscreen" id="fullscreen-button">Maximize</div>
       </div>
     </div>
   </body>
-  <script>
+  <script nonce="script297">
     // For stuff that needs to run after the elements are loaded.
     console.log("Running post-body initializer");
 
@@ -273,17 +279,20 @@
       dropdown.value = "0";
     }
 
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node.tagName === 'IMG' && node.src.includes('googleads.g.doubleclick.net')) {
-            node.remove();
-            processBlock(node.src, "IMG");
-          }
-        }
-      }
+    document.getElementById("themeselect").addEventListener("change", function () {
+      setTheme(this.value);
     });
 
-    observer.observe(document.body, { childList: true, subtree: true });
+    document.getElementById("mask-tab-button").addEventListener("click", function () {
+      maskTabs();
+    });
+
+    document.getElementById("mask-website-button").addEventListener("click", function () {
+      openMaskWebsite();
+    });
+
+    document.getElementById("fullscreen-button").addEventListener("click", function () {
+      fullscreen();
+    });
   </script>
 </html>

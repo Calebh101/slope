@@ -12,8 +12,7 @@ This Slope client uses the original Slope game, but has several addons/features:
 
 - No ads/trackers
 - Blocks ads/trackers from the Slope embed (beta)
-    - This works by blocking all page fetches, and blocking all non-asset-related XHR connections.
-    - If you want to know what websites/trackers have been blocked so far, type `console.log(blocked)` into the console.
+    - This works by using a CSP (Content Security Policy).
 - Includes color themes
     - Normal: normal theme
     - Blue and Orange (beta, since it increases brightness to get a nice shade so it looks a bit weird)
@@ -37,3 +36,7 @@ This Slope client uses the original Slope game, but has several addons/features:
 
 - Initial beta of the ad/tracker blocker
 - Color themes
+
+## 1.1.1
+
+- Migrated the ad/tracker blocker to using CSP
