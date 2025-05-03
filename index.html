@@ -59,8 +59,8 @@
         const url = this._receivedUrl;
         const host = (new URL(url, location.href)).hostname;
 
-        // If it's not fetching a local file, then block it. Otherwise, the game won't load.
-        if (host == "localhost") {
+        // If it's not fetching an asset file, then block it. Otherwise, the game won't load.
+        if (host == window.location.host) {
           console.log("Allowed XHR: " + url + " (" + host + ")");
           return originalXHRSend.apply(this, args);
         } else {
